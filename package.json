@@ -1,0 +1,17 @@
+{
+  "name": "debug-workbench-atom",
+  "main": "./lib/debug-workbench-atom",
+  "version": "0.1.0",
+  "description": "Integrates an extensible debugging framework into Atom.",
+  "keywords": ["debug", "debugger"],
+  "activationCommands": {
+    "atom-workspace": "debug-workbench-atom:toggle"
+  },
+  "repository": "https://github.com/debugworkbench/debug-workbench-atom",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

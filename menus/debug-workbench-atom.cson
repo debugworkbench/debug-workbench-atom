@@ -1,0 +1,21 @@
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle debug-workbench-atom'
+      'command': 'debug-workbench-atom:toggle'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'debug-workbench-atom'
+      'submenu': [
+        {
+          'label': 'Toggle'
+          'command': 'debug-workbench-atom:toggle'
+        }
+      ]
+    ]
+  }
+]

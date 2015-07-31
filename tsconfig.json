@@ -1,0 +1,23 @@
+{
+    "version": "1.5.3",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": true,
+        "removeComments": true,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "sourceMap": true,
+        "rootDir": "./src",
+        "outDir": "./lib",
+        "sourceRoot": "./src"
+    },
+    "files": [
+        "./typings/atom/atom.d.ts",
+        "./typings/node/node.d.ts",
+        "./src/debug-configuration.ts",
+        "./src/debug-workbench-atom.ts"
+    ]
+}
