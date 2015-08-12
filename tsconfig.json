@@ -6,7 +6,7 @@
         "declaration": false,
         "noImplicitAny": true,
         "removeComments": true,
-        "noLib": false,
+        "noLib": true,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "sourceMap": true,
@@ -15,9 +15,13 @@
         "sourceRoot": "./src"
     },
     "files": [
+        "./typings/lib.es6.d.ts",
         "./typings/atom/atom.d.ts",
         "./typings/node/node.d.ts",
-        "./src/debug-configuration.ts",
-        "./src/debug-workbench-atom.ts"
+        "./typings/gruntjs/gruntjs.d.ts",
+        "./typings/polymer/polymer.d.ts",
+        "./lib/core-components/index.d.ts",
+        "./lib/debug-configuration.ts",
+        "./lib/debug-workbench-atom.ts",
     ]
 }
