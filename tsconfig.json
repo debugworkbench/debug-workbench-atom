@@ -10,9 +10,7 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "sourceMap": true,
-        "rootDir": "./src",
-        "outDir": "./lib",
-        "sourceRoot": "./src"
+        "experimentalDecorators": true
     },
     "files": [
         "./typings/lib.es6.d.ts",

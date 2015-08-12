@@ -2,6 +2,7 @@
 // MIT License, see LICENSE file for full terms.
 
 import { DebugConfiguration } from './debug-configuration';
+import { DebugConfigurationElement } from './core-components/debug-configuration/debug-configuration';
 import { CompositeDisposable } from 'atom';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -42,6 +43,9 @@ function importWebComponent(href: string): Promise<void> {
   // TODO: Check if the browser will dedupe imports or if we need to keep track of all previously
   //       loaded elements to ensure each element is only loaded once.
   return new Promise<void>((resolve, reject) => {
+    // TODO: could probably just replace with the stuff below with this line, it does almost the
+    // same thing (though it'll call resolve(event) instead of just resolve()).
+    //Polymer.Base.importHref(href, resolve, reject);
     let link = document.createElement('link');
     link.href = href;
     link.rel = 'import';
@@ -63,8 +67,7 @@ export function activate(state: any): void {
   let packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
   generateTheme(packagePath);
   let elementPath = path.join(
-    packagePath, 'lib', 'components', 'debug-workbench-app', 'debug-configuration',
-    'debug-configuration.html'
+    packagePath, 'lib', 'core-components', 'debug-configuration', 'debug-configuration.html'
   );
   importWebComponent(path.join(packagePath, 'static', 'theme.html'))
   .catch((event: Event) => {
@@ -83,10 +86,10 @@ export function activate(state: any): void {
   })
   .then(() => {
     atom.views.addViewProvider(DebugConfiguration, (model: DebugConfiguration) => {
-      return document.createElement('debug-configuration');
+      return <any> document.createElement('debug-configuration');
     });
     debugConfiguration = new DebugConfiguration(state.debugConfigurationState);
-    let debugConfigurationElement: DebugConfigurationElement = atom.views.getView(debugConfiguration) as any;
+    let debugConfigurationElement: DebugConfigurationElement = <any> atom.views.getView(debugConfiguration);
     // TODO: setup the element, subscribe the model to events on the element
     modalPanel = atom.workspace.addModalPanel({ item: debugConfigurationElement, visible: false });
 
