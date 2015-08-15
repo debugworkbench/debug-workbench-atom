@@ -76,6 +76,7 @@ export function activate(state: any): void {
     return importWebComponent(elementPath);
   })
   .then(() => {
+    Polymer(DebugConfigurationElement.prototype);
     subscriptions.add(atom.notifications.addSuccess('debug-configuration element imported!'));
   })
   .catch((event: Event) => {
