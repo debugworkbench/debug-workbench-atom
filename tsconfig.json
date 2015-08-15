@@ -18,8 +18,8 @@
         "./typings/node/node.d.ts",
         "./typings/gruntjs/gruntjs.d.ts",
         "./typings/polymer/polymer.d.ts",
-        "./lib/core-components/index.d.ts",
+        "./node_modules/debug-workbench-core-components/index.d.ts",
         "./lib/debug-configuration.ts",
-        "./lib/debug-workbench-atom.ts",
+        "./lib/debug-workbench-atom.ts"
     ]
 }

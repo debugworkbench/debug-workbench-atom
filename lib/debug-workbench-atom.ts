@@ -2,7 +2,7 @@
 // MIT License, see LICENSE file for full terms.
 
 import { DebugConfiguration } from './debug-configuration';
-import { DebugConfigurationElement } from './core-components/debug-configuration/debug-configuration';
+import { DebugConfigurationElement } from 'debug-workbench-core-components/debug-configuration/debug-configuration';
 import { CompositeDisposable } from 'atom';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -43,18 +43,14 @@ function importWebComponent(href: string): Promise<void> {
   // TODO: Check if the browser will dedupe imports or if we need to keep track of all previously
   //       loaded elements to ensure each element is only loaded once.
   return new Promise<void>((resolve, reject) => {
-    // TODO: could probably just replace with the stuff below with this line, it does almost the
+    // TODO: Could probably just replace with the stuff below with this line, it does almost the
     // same thing (though it'll call resolve(event) instead of just resolve()).
     //Polymer.Base.importHref(href, resolve, reject);
     let link = document.createElement('link');
     link.href = href;
     link.rel = 'import';
-    link.onload = (event: Event): void => {
-      resolve();
-    };
-    link.onerror = (event: Event): void => {
-      reject(event);
-    }
+    link.onload = (event: Event) => resolve();
+    link.onerror = (event: Event) => reject(event);
     document.head.appendChild(link);
   });
 }
@@ -65,9 +61,11 @@ export function activate(state: any): void {
 
   // register custom elements
   let packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
+    
   generateTheme(packagePath);
+  
   let elementPath = path.join(
-    packagePath, 'lib', 'core-components', 'debug-configuration', 'debug-configuration.html'
+    packagePath, 'node_modules', 'debug-workbench-core-components', 'debug-configuration', 'debug-configuration.html'
   );
   importWebComponent(path.join(packagePath, 'static', 'theme.html'))
   .catch((event: Event) => {
