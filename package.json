@@ -15,5 +15,7 @@
   "dependencies": {
     "debug-workbench-core-components": "debugworkbench/core-components"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "grunt-tsc": "git://github.com/enlight/grunt-tsc"
+  }
 }
