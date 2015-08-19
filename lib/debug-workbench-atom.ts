@@ -68,7 +68,8 @@ export function activate(state: any): void {
   let elementPath = path.join(
     packagePath, 'node_modules', 'debug-workbench-core-components', 'debug-configuration', 'debug-configuration.html'
   );
-  importWebComponent(path.join(packagePath, 'static', 'theme.html'))
+  importWebComponent(path.join(packagePath, 'static', 'polymer-global-settings.html'))
+  .then(() => importWebComponent(path.join(packagePath, 'static', 'theme.html')))
   .catch((event: Event) => {
     subscriptions.add(atom.notifications.addError("static/theme.html couldn't be imported!"));
     console.error(event);
