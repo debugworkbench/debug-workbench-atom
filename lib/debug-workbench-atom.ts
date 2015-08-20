@@ -2,13 +2,12 @@
 // MIT License, see LICENSE file for full terms.
 
 import { DebugConfiguration } from './debug-configuration';
-import { DebugConfigurationElement } from 'debug-workbench-core-components/debug-configuration/debug-configuration';
 import { CompositeDisposable } from 'atom';
+import { importHref } from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 
 var debugConfiguration: DebugConfiguration;
-var modalPanel: AtomCore.Panel;
 var subscriptions: CompositeDisposable;
 var packageReady = false;
 
@@ -40,63 +39,26 @@ function generateTheme(packagePath: string): void {
   }
 }
 
-function importWebComponent(href: string): Promise<void> {
-  // TODO: Check if the browser will dedupe imports or if we need to keep track of all previously
-  //       loaded elements to ensure each element is only loaded once.
-  return new Promise<void>((resolve, reject) => {
-    // TODO: Could probably just replace with the stuff below with this line, it does almost the
-    // same thing (though it'll call resolve(event) instead of just resolve()).
-    //Polymer.Base.importHref(href, resolve, reject);
-    let link = document.createElement('link');
-    link.href = href;
-    link.rel = 'import';
-    link.onload = (event: Event) => resolve();
-    link.onerror = (event: Event) => reject(event);
-    document.head.appendChild(link);
-  });
-}
-
 export function activate(state: any): void {
   // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
   subscriptions = new CompositeDisposable();
 
   // register custom elements
-  let packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
+  const packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
     
   generateTheme(packagePath);
-  
-  let elementPath = path.join(
-    packagePath, 'node_modules', 'debug-workbench-core-components', 'debug-configuration', 'debug-configuration.html'
-  );
-  importWebComponent(path.join(packagePath, 'static', 'polymer-global-settings.html'))
-  .then(() => importWebComponent(path.join(packagePath, 'static', 'theme.html')))
+    
+  importHref(path.join(packagePath, 'static', 'polymer-global-settings.html'))
+  .then(() => importHref(path.join(packagePath, 'static', 'theme.html')))
   .catch((event: Event) => {
     subscriptions.add(atom.notifications.addError("static/theme.html couldn't be imported!"));
     console.error(event);
   })
+  .then(() => DebugConfiguration.initialize(packagePath))
   .then(() => {
-    return importWebComponent(elementPath);
-  })
-  .then(() => {
-    Polymer(DebugConfigurationElement.prototype);
-    subscriptions.add(atom.notifications.addSuccess('debug-configuration element imported!'));
-  })
-  .catch((event: Event) => {
-    subscriptions.add(atom.notifications.addError("debug-configuration element couldn't be imported!"));
-    console.error(event);
-  })
-  .then(() => {
-    atom.views.addViewProvider(DebugConfiguration, (model: DebugConfiguration) => {
-      return <any> document.createElement('debug-configuration');
-    });
     debugConfiguration = new DebugConfiguration(state.debugConfigurationState);
-    let debugConfigurationElement: DebugConfigurationElement = <any> atom.views.getView(debugConfiguration);
-    // TODO: setup the element, subscribe the model to events on the element
-    modalPanel = atom.workspace.addModalPanel({ item: debugConfigurationElement, visible: false });
-
     // Register command that toggles this view
     subscriptions.add(atom.commands.add('atom-workspace', 'debug-workbench-atom:toggle', toggle));
-
     // Atom doesn't wait for the package to finish activating before it attempts to execute
     // the toggle command, which means that the toggle command probably hasn't even been registered
     // yet when Atom tries to find it. So, we have to call toggle() here after activation finished.
@@ -107,10 +69,7 @@ export function activate(state: any): void {
 
 export function deactivate(): void {
   packageReady = false;
-  
-  if (modalPanel) {
-    modalPanel.destroy();
-  }
+    
   if (subscriptions) {
     subscriptions.dispose();
   }
@@ -124,11 +83,7 @@ export function serialize(): any {
 }
 
 export function toggle(): void {
-  if (packageReady && modalPanel) {
-    if (modalPanel.isVisible()) {
-      modalPanel.hide();
-    } else {
-      modalPanel.show();
-    }
+  if (packageReady && debugConfiguration) {
+    debugConfiguration.toggle();
   }
 }

@@ -20,6 +20,7 @@
         "./typings/polymer/polymer.d.ts",
         "./node_modules/debug-workbench-core-components/index.d.ts",
         "./lib/debug-configuration.ts",
-        "./lib/debug-workbench-atom.ts"
+        "./lib/debug-workbench-atom.ts",
+        "./lib/utils.ts"
     ]
 }
