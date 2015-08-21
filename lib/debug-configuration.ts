@@ -7,7 +7,7 @@ import * as path from 'path';
 
 /** Integrates DebugConfigurationElement into Atom. */
 export class DebugConfiguration {
-  private element: DebugConfigurationElement;
+  private element: DebugConfigurationElement & polymer.Base;
   private modalPanel: AtomCore.Panel;
   
   static initialize(packagePath: string): Promise<void> {
@@ -25,7 +25,9 @@ export class DebugConfiguration {
   
   constructor(serializedState: any) {
     this.element = <any> atom.views.getView(this);
-    // TODO: setup the element, subscribe the model to events on the element
+    // hook up the element to the panel so that opening/closing the element shows/hides the panel
+    this.element.addEventListener('iron-overlay-opened', () => this.modalPanel.show());
+    this.element.addEventListener('iron-overlay-closed', () => this.modalPanel.hide());
     this.modalPanel = atom.workspace.addModalPanel({ item: this.element, visible: false });
   }
 
@@ -42,12 +44,10 @@ export class DebugConfiguration {
   }
   
   toggle(): void {
-    if (this.modalPanel) {
+    if (this.modalPanel && this.element) {
       if (this.modalPanel.isVisible()) {
         this.element.close();
-        this.modalPanel.hide();
       } else {
-        this.modalPanel.show();
         this.element.open();
       }
     }
