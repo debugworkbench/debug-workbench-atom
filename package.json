@@ -3,7 +3,10 @@
   "main": "./lib/debug-workbench-atom",
   "version": "0.1.0",
   "description": "Integrates an extensible debugging framework into Atom.",
-  "keywords": ["debug", "debugger"],
+  "keywords": [
+    "debug",
+    "debugger"
+  ],
   "activationCommands": {
     "atom-workspace": "debug-workbench-atom:toggle"
   },
