@@ -16,9 +16,12 @@ export class DebugConfiguration {
     );
     return importHref(elementPath)
     .then(() => {
-      Polymer(DebugConfigurationElement.prototype);
+      DebugConfigurationElement.register();
       atom.views.addViewProvider(DebugConfiguration, (model: DebugConfiguration) => {
-        return <any> document.createElement('debug-configuration');
+        const element = document.createElement('debug-configuration');
+        // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
+        element.classList.add('native-key-bindings');
+        return element;
       });
     })
   }

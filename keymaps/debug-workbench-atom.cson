@@ -10,7 +10,10 @@
 'atom-workspace':
   'ctrl-alt-o': 'debug-workbench-atom:toggle'
 
-# Prevent Atom from hijacking keystrokes meant for Polymer components
+# Prevent Atom from hijacking keystrokes meant for Polymer components...
+# unfortunately this only works for elements outside the shadow DOM, to get this working for
+# elements inside the shadow DOM it seems you have to override the bindings on the host element
+# (either here or by applying the native-key-bindings class to the host element).
 'paper-input':
   'backspace': 'native!'
   'delete': 'native!'
