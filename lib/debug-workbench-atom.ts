@@ -2,6 +2,7 @@
 // MIT License, see LICENSE file for full terms.
 
 import { DebugConfiguration } from './debug-configuration';
+import { register as registerElementLoader } from 'debug-workbench-core-components/register-element/register-element'
 import { CompositeDisposable } from 'atom';
 import { importHref } from './utils';
 import * as path from 'path';
@@ -47,13 +48,12 @@ export function activate(state: any): void {
   const packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
     
   generateTheme(packagePath);
-    
   importHref(path.join(packagePath, 'static', 'polymer-global-settings.html'))
+  .then(() => importHref(path.join(
+      packagePath, 'node_modules', 'debug-workbench-core-components', 'register-element', 'register-element.html'
+  )))
+  .then(() => registerElementLoader())
   .then(() => importHref(path.join(packagePath, 'static', 'theme.html')))
-  .catch((event: Event) => {
-    subscriptions.add(atom.notifications.addError("static/theme.html couldn't be imported!"));
-    console.error(event);
-  })
   .then(() => DebugConfiguration.initialize(packagePath))
   .then(() => {
     debugConfiguration = new DebugConfiguration(state.debugConfigurationState);
@@ -64,7 +64,10 @@ export function activate(state: any): void {
     // yet when Atom tries to find it. So, we have to call toggle() here after activation finished.
     packageReady = true;
     toggle();
-  });
+  })
+  .catch((err) => {
+    console.error(err);
+  })
 }
 
 export function deactivate(): void {
