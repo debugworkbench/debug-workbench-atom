@@ -2,12 +2,14 @@
 // MIT License, see LICENSE file for full terms.
 
 import { DebugConfiguration } from './debug-configuration';
+import { DebugToolbar } from './debug-toolbar';
 import { register as registerElementLoader } from 'debug-workbench-core-components/register-element/register-element'
 import { CompositeDisposable } from 'atom';
 import { importHref } from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 
+var debugToolbar: DebugToolbar;
 var debugConfiguration: DebugConfiguration;
 var subscriptions: CompositeDisposable;
 var packageReady = false;
@@ -55,8 +57,10 @@ export function activate(state: any): void {
   .then(() => registerElementLoader())
   .then(() => importHref(path.join(packagePath, 'static', 'theme.html')))
   .then(() => DebugConfiguration.initialize(packagePath))
+  .then(() => DebugToolbar.initialize(packagePath))
   .then(() => {
     debugConfiguration = new DebugConfiguration(state.debugConfigurationState);
+    debugToolbar = new DebugToolbar({});
     // Register command that toggles this view
     subscriptions.add(atom.commands.add('atom-workspace', 'debug-workbench-atom:toggle', toggle));
     // Atom doesn't wait for the package to finish activating before it attempts to execute
@@ -79,6 +83,9 @@ export function deactivate(): void {
   if (debugConfiguration) {
     debugConfiguration.destroy();
   }
+  if (debugToolbar) {
+    debugToolbar.destroy();
+  }
 }
 
 export function serialize(): any {
@@ -86,7 +93,7 @@ export function serialize(): any {
 }
 
 export function toggle(): void {
-  if (packageReady && debugConfiguration) {
-    debugConfiguration.toggle();
+  if (packageReady && debugToolbar) {
+    debugToolbar.toggle();
   }
 }
