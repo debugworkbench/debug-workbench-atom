@@ -1,7 +1,9 @@
 // Copyright (c) 2015 Vadim Macagon
 // MIT License, see LICENSE file for full terms.
 
+import { CompositeDisposable } from 'atom';
 import { DebugToolbarElement } from 'debug-workbench-core-components/debug-toolbar/debug-toolbar';
+import { DebugConfiguration } from './debug-configuration';
 import { importHref } from './utils';
 import * as path from 'path';
 
@@ -9,6 +11,7 @@ import * as path from 'path';
 export class DebugToolbar {
   private element: DebugToolbarElement & polymer.Base;
   private panel: AtomCore.Panel;
+  private subscriptions: CompositeDisposable;
   
   static initialize(packagePath: string): Promise<void> {
     const elementPath = path.join(
@@ -19,15 +22,20 @@ export class DebugToolbar {
       atom.views.addViewProvider(DebugToolbar, (model: DebugToolbar) => {
         const element = document.createElement('debug-workbench-debug-toolbar');
         // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
-        //element.classList.add('native-key-bindings');
+        element.classList.add('native-key-bindings');
         return element;
       });
     })
   }
   
   constructor(serializedState: any) {
+    this.subscriptions = new CompositeDisposable();
     this.element = <any> atom.views.getView(this);
     this.panel = atom.workspace.addTopPanel({ item: this.element, visible: false });
+  }
+
+  initialize(debugConfiguration: DebugConfiguration): void {
+    this.subscriptions.add(this.element.onActivateSettingsTool((event: Event) => debugConfiguration.show()));
   }
 
   /** Returns an object that can be retrieved when package is activated. */
@@ -39,6 +47,9 @@ export class DebugToolbar {
   destroy(): void {
     if (this.panel) {
       this.panel.destroy();
+    }
+    if (this.subscriptions) {
+      this.subscriptions.dispose();
     }
   }
   

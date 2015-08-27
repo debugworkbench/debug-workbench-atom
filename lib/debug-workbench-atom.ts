@@ -61,6 +61,7 @@ export function activate(state: any): void {
   .then(() => {
     debugConfiguration = new DebugConfiguration(state.debugConfigurationState);
     debugToolbar = new DebugToolbar({});
+    debugToolbar.initialize(debugConfiguration);
     // Register command that toggles this view
     subscriptions.add(atom.commands.add('atom-workspace', 'debug-workbench-atom:toggle', toggle));
     // Atom doesn't wait for the package to finish activating before it attempts to execute

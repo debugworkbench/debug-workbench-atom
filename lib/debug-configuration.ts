@@ -45,6 +45,18 @@ export class DebugConfiguration {
     }
   }
   
+  show(): void {
+    if (this.element) {
+      this.element.open();
+    }
+  }
+  
+  hide(): void {
+    if (this.element) {
+      this.element.close();
+    }
+  }
+  
   toggle(): void {
     if (this.modalPanel && this.element) {
       if (this.modalPanel.isVisible()) {
