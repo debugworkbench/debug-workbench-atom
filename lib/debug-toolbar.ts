@@ -35,7 +35,7 @@ export class DebugToolbar {
   }
 
   initialize(debugConfiguration: DebugConfiguration): void {
-    this.subscriptions.add(this.element.onActivateSettingsTool((event: Event) => debugConfiguration.show()));
+    this.subscriptions.add(this.element.onSettingsButtonPressed((event: Event) => debugConfiguration.show()));
   }
 
   /** Returns an object that can be retrieved when package is activated. */
