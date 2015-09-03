@@ -1,16 +1,19 @@
 // Copyright (c) 2015 Vadim Macagon
 // MIT License, see LICENSE file for full terms.
 
-import { DebugConfiguration } from './debug-configuration';
-import { DebugToolbar } from './debug-toolbar';
-import { register as registerElementLoader } from 'debug-workbench-core-components/register-element/register-element'
+import DebugToolbar from './debug-toolbar';
+import DebugConfigDialog from './debug-configuration';
+import NewDebugConfigDialogElement from 'debug-workbench-core-components/new-debug-config-dialog/new-debug-config-dialog';
+import DebugToolbarElement from 'debug-workbench-core-components/debug-toolbar/debug-toolbar';
 import { CompositeDisposable } from 'atom';
 import { importHref } from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as debugWorkbench from 'debug-workbench-core-components/lib/debug-workbench';
+import { IDebugConfig } from 'debug-workbench-core-components/lib/debug-engine';
+import ElementFactory from './element-factory';
 
 var debugToolbar: DebugToolbar;
-var debugConfiguration: DebugConfiguration;
 var subscriptions: CompositeDisposable;
 var packageReady = false;
 
@@ -42,26 +45,61 @@ function generateTheme(packagePath: string): void {
   }
 }
 
+function createDebugConfig(): Promise<IDebugConfig> {
+  return new Promise<IDebugConfig>((resolve, reject) => {
+    // create a new config
+    NewDebugConfigDialogElement.create()
+    .then((element) => {
+      // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
+      element.classList.add('native-key-bindings');
+      const panel = atom.workspace.addModalPanel({ item: element, visible: false });
+      const subscriptions = new CompositeDisposable();
+      subscriptions.add(element.onClosed((debugConfig: IDebugConfig) => {
+        subscriptions.dispose();
+        panel.destroy();
+        debugConfig ? resolve(debugConfig) : reject();
+      }));
+      element.open();
+      panel.show();
+    });
+  });
+}
+
+function getDebugConfig(configName?: string): Promise<IDebugConfig> {
+  return configName ? debugWorkbench.getDebugConfig(configName) : createDebugConfig();
+}
+
+function openDebugConfig(configName?: string): Promise<void> {
+  return getDebugConfig(configName)
+    .then((debugConfig) => debugConfig.createElement())
+    .then((element) => {
+      const debugConfigDialog = new DebugConfigDialog(element);
+      debugConfigDialog.show();
+    });
+}
+
 export function activate(state: any): void {
+  const packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
+  const elementFactory = new ElementFactory(packagePath);
+  // manually add the initial set of custom elements to the element factory,
+  // any dependencies will be added automatically
+  elementFactory.addElementPath('debug-configuration');
+  elementFactory.addElementPath('debug-workbench-debug-toolbar', path.join('debug-toolbar', 'debug-toolbar.html'));
+  elementFactory.addElementPath('debug-workbench-new-debug-config-dialog', path.join('new-debug-config-dialog', 'new-debug-config-dialog.html'));
+    
   // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
   subscriptions = new CompositeDisposable();
-
-  // register custom elements
-  const packagePath = atom.packages.getLoadedPackage('debug-workbench-atom').path;
     
   generateTheme(packagePath);
-  importHref(path.join(packagePath, 'static', 'polymer-global-settings.html'))
-  .then(() => importHref(path.join(
-      packagePath, 'node_modules', 'debug-workbench-core-components', 'register-element', 'register-element.html'
-  )))
-  .then(() => registerElementLoader())
+
+  debugWorkbench.activate({ openDebugConfig, elementFactory });
+
+  elementFactory.initialize()
   .then(() => importHref(path.join(packagePath, 'static', 'theme.html')))
-  .then(() => DebugConfiguration.initialize(packagePath))
-  .then(() => DebugToolbar.initialize(packagePath))
-  .then(() => {
-    debugConfiguration = new DebugConfiguration(state.debugConfigurationState);
-    debugToolbar = new DebugToolbar({});
-    debugToolbar.initialize(debugConfiguration);
+  .then(() => DebugToolbarElement.create())
+  .then((debugToolbarElement) => {
+    debugToolbar = new DebugToolbar(debugToolbarElement);
+    
     // Register command that toggles this view
     subscriptions.add(atom.commands.add('atom-workspace', 'debug-workbench-atom:toggle', toggle));
     // Atom doesn't wait for the package to finish activating before it attempts to execute
@@ -81,16 +119,14 @@ export function deactivate(): void {
   if (subscriptions) {
     subscriptions.dispose();
   }
-  if (debugConfiguration) {
-    debugConfiguration.destroy();
-  }
   if (debugToolbar) {
     debugToolbar.destroy();
   }
+  debugWorkbench.deactivate();
 }
 
 export function serialize(): any {
-  return  { debugConfigurationState: debugConfiguration.serialize() };
+  return  { };
 }
 
 export function toggle(): void {

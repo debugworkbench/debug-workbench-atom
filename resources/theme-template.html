@@ -3,10 +3,10 @@
   :root {
     --paper-input-container-color: @text-color-subtle;
     --paper-input-container-input-color: @text-color;
-    
-    --debug-workbench-debug-configuration-dialog: {
+
+    --debug-workbench-dialog-in-modal-panel: {
       /*
-        By default the dialog is centered in the window, but that prevents the Atom panel
+        By default a dialog is centered in the window, but that prevents the Atom panel
         containing the dialog from resizing properly. Positioning the dialog in the
         top-left corner of the Atom panel seems to do the trick. 
       */
@@ -15,6 +15,14 @@
       left: 0px;
       /* The Atom panel the dialog is embedded in already has a margin. */
       margin: 0;
+    }
+
+    --debug-workbench-new-debug-config-dialog: {
+      @apply(--debug-workbench-dialog-in-modal-panel);
+    }
+    
+    --debug-workbench-debug-configuration-dialog: {
+      @apply(--debug-workbench-dialog-in-modal-panel);
     }
   }
 </style>

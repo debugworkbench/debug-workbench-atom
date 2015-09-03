@@ -1,0 +1,127 @@
+// Copyright (c) 2015 Vadim Macagon
+// MIT License, see LICENSE file for full terms.
+
+import { IElementFactory } from 'debug-workbench-core-components/lib/element-factory';
+import { register as registerElementLoader } from 'debug-workbench-core-components/register-element/register-element';
+import { importHref } from './utils';
+import * as path from 'path';
+
+interface IElementMapEntry {
+  /** Absolute path to the element's main .html file. */
+  documentPath?: string;
+  /** Element constructor (for Polymer-based elements this is the function returned by `Polymer()`). */
+  elementConstructor?: Function;
+}
+
+/**
+ * Creates new instances of custom elements.
+ *
+ * Elements can be added to the factory in two ways. Directly, by specifying a path to the
+ * element's main `.html` file (@see [[addElementPath]]). Or, indirectly, by being
+ * referenced in an HTML import. Either way, the element is registered with the document
+ * by the `register-element` custom element, and the element constructor is stored in the
+ * factory.
+ */
+export default class ElementFactory implements IElementFactory {
+  private elements = new Map</* tagName: */string, IElementMapEntry>();
+  
+  constructor(private packagePath: string) {
+  }
+  
+  /**
+   * Initialize the factory.
+   * 
+   * This must be done before any debug-workbench custom elements are imported.
+   * @return A promise that will be resolved when initialization completes. 
+   */
+  initialize(): Promise<void> {
+    return importHref(path.join(this.packagePath, 'static', 'polymer-global-settings.html'))
+    .then(() => {
+      return importHref(this.resolvePath('register-element')).then(() => {
+        registerElementLoader();
+      });
+    });
+  }
+  
+  resolvePath(tagName: string, relativePath?: string): string {
+    if (relativePath) {
+      return path.join(
+        this.packagePath, 'node_modules', 'debug-workbench-core-components', relativePath
+      );
+    } else {
+      return path.join(
+        this.packagePath, 'node_modules', 'debug-workbench-core-components', tagName, tagName + '.html'
+      );
+    }
+  }
+  
+  /**
+   * Set the path to an element's main `.html` file.
+   * 
+   * @param tagName The name under which the custom element will be registered with the document.
+   * @param relativePath The path to the element's `.html` file relative to the
+   *                     `debug-workbench-core-components` package directory. If omitted this
+   *                      path will be deduced from the [[tagName]].
+   */
+  addElementPath(tagName: string, relativePath?: string): void {
+    this.elements.set(tagName, { documentPath: this.resolvePath(tagName, relativePath) });
+  }
+  
+  setElementConstructor(tagName: string, elementConstructor: Function): void {
+    const elementEntry = this.elements.get(tagName);
+    if (elementEntry) {
+      elementEntry.elementConstructor = elementConstructor;
+    } else {
+      this.elements.set(tagName, { elementConstructor });
+    }
+  }
+  
+  /** 
+   * Import a custom element from a previously specified location.
+   * 
+   * @param tagName The name of known custom element previously added to the factory via
+   *                [[addElementPath]].
+   * @return A promise that will be resolved with a custom element constructor function.
+   */
+  importElement(tagName: string): Promise<Function> {
+    return Promise.resolve().then(() => {
+      const elementEntry = this.elements.get(tagName);
+      if (!elementEntry) {
+        throw new Error(`Can't import <${tagName}> element because no path was specified.`);
+      } else {
+        return importHref(elementEntry.documentPath).then(() => {
+          // note: the <register-element> in the imported document will add the element constructor
+          // to this.elements
+          return this.elements.get(tagName).elementConstructor;
+        });
+      }
+    });
+  }
+  
+  /**
+   * Create a new instance of a custom element.
+   * 
+   * @param tagName The name of a known custom element. 
+   * @return A promise that will be resolved with a new custom element instance.
+   */
+  createElement(tagName: string, ...args: any[]): Promise<HTMLElement> {
+    return new Promise<HTMLElement>((resolve, reject) => {
+      let elementConstructor = this.elements.get(tagName).elementConstructor;
+      if (elementConstructor) {
+        // invoke the constructor with the given args
+        resolve(new (Function.prototype.bind.apply(elementConstructor, args)));
+      } else {
+        resolve(
+          this.importElement(tagName)
+          .then((elementConstructor) => {
+            return new (Function.prototype.bind.apply(elementConstructor, args));
+          })
+        );
+      }
+    });
+  }
+  
+  createCoreElement(tagName: string, ...args: any[]): Promise<HTMLElement> {
+    return this.createElement('debug-workbench-' + tagName, args);
+  }
+}
