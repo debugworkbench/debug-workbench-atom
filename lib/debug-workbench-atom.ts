@@ -45,9 +45,14 @@ function generateTheme(packagePath: string): void {
   }
 }
 
+/**
+ * Display a dialog that lets the user create a new debug configuration.
+ * 
+ * @return A promise that will either be resolved with a new debug configuration,
+ *         or with null if the user cancelled the operation.
+ */
 function createDebugConfig(): Promise<IDebugConfig> {
   return new Promise<IDebugConfig>((resolve, reject) => {
-    // create a new config
     NewDebugConfigDialogElement.create()
     .then((element) => {
       // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
@@ -57,7 +62,7 @@ function createDebugConfig(): Promise<IDebugConfig> {
       subscriptions.add(element.onClosed((debugConfig: IDebugConfig) => {
         subscriptions.dispose();
         panel.destroy();
-        debugConfig ? resolve(debugConfig) : reject();
+        resolve(debugConfig);
       }));
       element.open();
       panel.show();
@@ -69,13 +74,27 @@ function getDebugConfig(configName?: string): Promise<IDebugConfig> {
   return configName ? debugWorkbench.getDebugConfig(configName) : createDebugConfig();
 }
 
-function openDebugConfig(configName?: string): Promise<void> {
-  return getDebugConfig(configName)
-    .then((debugConfig) => debugConfig.createElement())
-    .then((element) => {
-      const debugConfigDialog = new DebugConfigDialog(element);
-      debugConfigDialog.show();
-    });
+/**
+ * Open a dialog that lets the user edit a debug configuration.
+ * 
+ * @param configName Name of the debug configuration to edit, if this argument is omitted
+ *                   the user will be prompted to create a new configuration that will
+ *                   then be displayed for editing.
+ */
+function openDebugConfig(configName?: string): void {
+  getDebugConfig(configName)
+  .then((debugConfig) => {
+    if (debugConfig) {
+      return debugConfig.createElement()
+      .then((element) => {
+        const debugConfigDialog = new DebugConfigDialog(element);
+        debugConfigDialog.show();
+      });
+    }
+  })
+  .catch((error) => {
+    throw error;
+  });
 }
 
 export function activate(state: any): void {
