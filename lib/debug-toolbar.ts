@@ -2,14 +2,19 @@
 // MIT License, see LICENSE file for full terms.
 
 import { CompositeDisposable } from 'atom';
-import { IDebugToolbarElement } from 'debug-workbench-core-components/debug-toolbar/debug-toolbar';
+import DebugToolbarElement, { IDebugToolbarElement } from 'debug-workbench-core-components/debug-toolbar/debug-toolbar';
 import { importHref } from './utils';
 import * as path from 'path';
 
 /** Integrates DebugToolbarElement into Atom. */
 export default class DebugToolbar {
   private panel: AtomCore.Panel;
-    
+  
+  static create(): Promise<DebugToolbar> {
+    return DebugToolbarElement.create()
+      .then((debugToolbarElement) => new DebugToolbar(debugToolbarElement));
+  }
+  
   constructor(private element: IDebugToolbarElement) {
     // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
     element.classList.add('native-key-bindings');

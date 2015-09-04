@@ -4,7 +4,6 @@
 import DebugToolbar from './debug-toolbar';
 import DebugConfigDialog from './debug-configuration';
 import NewDebugConfigDialogElement from 'debug-workbench-core-components/new-debug-config-dialog/new-debug-config-dialog';
-import DebugToolbarElement from 'debug-workbench-core-components/debug-toolbar/debug-toolbar';
 import { CompositeDisposable } from 'atom';
 import { importHref } from './utils';
 import * as path from 'path';
@@ -13,7 +12,7 @@ import * as debugWorkbench from 'debug-workbench-core-components/lib/debug-workb
 import { IDebugConfig } from 'debug-workbench-core-components/lib/debug-engine';
 import ElementFactory from './element-factory';
 
-var debugToolbar: DebugToolbar;
+var _debugToolbar: DebugToolbar;
 var subscriptions: CompositeDisposable;
 var packageReady = false;
 
@@ -115,9 +114,9 @@ export function activate(state: any): void {
 
   elementFactory.initialize()
   .then(() => importHref(path.join(packagePath, 'static', 'theme.html')))
-  .then(() => DebugToolbarElement.create())
-  .then((debugToolbarElement) => {
-    debugToolbar = new DebugToolbar(debugToolbarElement);
+  .then(() => DebugToolbar.create())
+  .then((debugToolbar) => {
+    _debugToolbar = debugToolbar;
     
     // Register command that toggles this view
     subscriptions.add(atom.commands.add('atom-workspace', 'debug-workbench-atom:toggle', toggle));
@@ -138,8 +137,8 @@ export function deactivate(): void {
   if (subscriptions) {
     subscriptions.dispose();
   }
-  if (debugToolbar) {
-    debugToolbar.destroy();
+  if (_debugToolbar) {
+    _debugToolbar.destroy();
   }
   debugWorkbench.deactivate();
 }
@@ -149,7 +148,7 @@ export function serialize(): any {
 }
 
 export function toggle(): void {
-  if (packageReady && debugToolbar) {
-    debugToolbar.toggle();
+  if (packageReady && _debugToolbar) {
+    _debugToolbar.toggle();
   }
 }
