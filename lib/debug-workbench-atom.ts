@@ -84,11 +84,8 @@ function openDebugConfig(configName?: string): void {
   getDebugConfig(configName)
   .then((debugConfig) => {
     if (debugConfig) {
-      return debugConfig.createElement()
-      .then((element) => {
-        const debugConfigDialog = new DebugConfigDialog(element);
-        debugConfigDialog.show();
-      });
+      return DebugConfigDialog.create(debugConfig)
+      .then((dialog) => dialog.show());
     }
   })
   .catch((error) => {

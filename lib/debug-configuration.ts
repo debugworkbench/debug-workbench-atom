@@ -2,7 +2,7 @@
 // MIT License, see LICENSE file for full terms.
 
 import { CompositeDisposable } from 'atom';
-import { IDebugConfigElement } from 'debug-workbench-core-components/lib/debug-engine';
+import { IDebugConfigElement, IDebugConfig } from 'debug-workbench-core-components/lib/debug-engine';
 import { importHref } from './utils';
 import * as path from 'path';
 
@@ -10,6 +10,11 @@ import * as path from 'path';
 export default class DebugConfiguration {
   private subscriptions: CompositeDisposable;
   private modalPanel: AtomCore.Panel;
+  
+  static create(debugConfig: IDebugConfig): Promise<DebugConfiguration> {
+    return debugConfig.createElement()
+      .then((element) => new DebugConfiguration(element));
+  }
   
   constructor(private element: IDebugConfigElement) {
     // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
