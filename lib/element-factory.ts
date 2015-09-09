@@ -109,12 +109,14 @@ export default class ElementFactory implements IElementFactory {
       let elementConstructor = this.elements.get(tagName).elementConstructor;
       if (elementConstructor) {
         // invoke the constructor with the given args
-        resolve(new (Function.prototype.bind.apply(elementConstructor, args)));
+        // TODO: in ES6 this can be simplified to Reflect.construct(elementConstructor, args),
+        //       but have to wait for Chrome and Electron to support it. 
+        resolve(new (Function.prototype.bind.apply(elementConstructor, [null].concat(args))));
       } else {
         resolve(
           this.importElement(tagName)
           .then((elementConstructor) => {
-            return new (Function.prototype.bind.apply(elementConstructor, args));
+            return new (Function.prototype.bind.apply(elementConstructor, [null].concat(args)));
           })
         );
       }
