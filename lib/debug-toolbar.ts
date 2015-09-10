@@ -25,6 +25,11 @@ export default class DebugToolbar {
   destroy(): void {
     if (this.panel) {
       this.panel.destroy();
+      this.panel = null;
+    }
+    if (this.element) {
+      this.element.destroy();
+      this.element = null;
     }
   }
   

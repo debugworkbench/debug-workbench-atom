@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import * as debugWorkbench from 'debug-workbench-core-components/lib/debug-workbench';
 import { IDebugConfig } from 'debug-workbench-core-components/lib/debug-engine';
 import ElementFactory from './element-factory';
+import DebugConfigManager from 'debug-workbench-core-components/lib/debug-config-manager';
 
 var _debugToolbar: DebugToolbar;
 var subscriptions: CompositeDisposable;
@@ -61,6 +62,7 @@ function createDebugConfig(): Promise<IDebugConfig> {
       subscriptions.add(element.onClosed((debugConfig: IDebugConfig) => {
         subscriptions.dispose();
         panel.destroy();
+        element.destroy();
         resolve(debugConfig);
       }));
       element.open();
@@ -70,7 +72,9 @@ function createDebugConfig(): Promise<IDebugConfig> {
 }
 
 function getDebugConfig(configName?: string): Promise<IDebugConfig> {
-  return configName ? debugWorkbench.getDebugConfig(configName) : createDebugConfig();
+  return Promise.resolve().then(() => {
+    return configName ? debugWorkbench.debugConfigs.get(configName) : createDebugConfig();
+  })
 }
 
 /**
@@ -101,15 +105,18 @@ export function activate(state: any): void {
   elementFactory.addElementPath('debug-configuration');
   elementFactory.addElementPath('debug-workbench-debug-toolbar', path.join('debug-toolbar', 'debug-toolbar.html'));
   elementFactory.addElementPath('debug-workbench-new-debug-config-dialog', path.join('new-debug-config-dialog', 'new-debug-config-dialog.html'));
-    
+  
+  const debugConfigsPath = path.join(atom.getConfigDirPath(), 'DebugWorkbenchDebugConfigs.json'); 
+  const debugConfigManager = new DebugConfigManager(debugConfigsPath);
   // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
   subscriptions = new CompositeDisposable();
     
   generateTheme(packagePath);
 
-  debugWorkbench.activate({ openDebugConfig, elementFactory });
+  debugWorkbench.activate({ openDebugConfig, elementFactory, debugConfigManager });
 
   elementFactory.initialize()
+  .then(() => debugConfigManager.load())
   .then(() => importHref(path.join(packagePath, 'static', 'theme.html')))
   .then(() => DebugToolbar.create())
   .then((debugToolbar) => {

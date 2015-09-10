@@ -5,6 +5,7 @@ import { CompositeDisposable } from 'atom';
 import { IDebugConfigElement, IDebugConfig } from 'debug-workbench-core-components/lib/debug-engine';
 import { importHref } from './utils';
 import * as path from 'path';
+import * as engineProvider from 'debug-workbench-core-components/lib/debug-engine-provider';
 
 /** Integrates DebugConfigurationElement into Atom. */
 export default class DebugConfiguration {
@@ -12,8 +13,10 @@ export default class DebugConfiguration {
   private modalPanel: AtomCore.Panel;
   
   static create(debugConfig: IDebugConfig): Promise<DebugConfiguration> {
-    return debugConfig.createElement()
-      .then((element) => new DebugConfiguration(element));
+    return Promise.resolve().then(() => {
+      return engineProvider.getEngine(debugConfig.engine).createConfigElement(debugConfig);
+    })
+    .then((element) => new DebugConfiguration(element));
   }
   
   constructor(private element: IDebugConfigElement) {
@@ -30,25 +33,25 @@ export default class DebugConfiguration {
   /** Tear down any state and detach. */
   destroy(): void {
     if (this.subscriptions) {
-      this.subscriptions.dispose;
+      this.subscriptions.dispose();
       this.subscriptions = null;
     }
     if (this.modalPanel) {
       this.modalPanel.destroy();
       this.modalPanel = null;
     }
+    if (this.element) {
+      this.element.destroy();
+      this.element = null;
+    }
   }
   
   show(): void {
-    if (this.element) {
-      this.element.open();
-    }
+    this.element.open();
   }
   
   hide(): void {
-    if (this.element) {
-      this.element.close();
-    }
+    this.element.close();
   }
   
   toggle(): void {
