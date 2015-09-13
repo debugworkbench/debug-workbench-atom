@@ -10,7 +10,8 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
         "sourceMap": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "moduleResolution": "node"
     },
     "files": [
         "./typings/lib.es6.d.ts",
@@ -18,7 +19,6 @@
         "./typings/node/node.d.ts",
         "./typings/gruntjs/gruntjs.d.ts",
         "./typings/tsd.d.ts",
-        "./node_modules/debug-workbench-core-components/index.d.ts",
         "./lib/debug-configuration.ts",
         "./lib/debug-toolbar.ts",
         "./lib/debug-workbench-atom.ts",

@@ -2,10 +2,9 @@
 // MIT License, see LICENSE file for full terms.
 
 import { CompositeDisposable } from 'atom';
-import { IDebugConfigElement, IDebugConfig } from 'debug-workbench-core-components/lib/debug-engine';
+import { IDebugConfigElement, IDebugConfig, debugEngineProvider } from 'debug-workbench-core-components';
 import { importHref } from './utils';
 import * as path from 'path';
-import * as engineProvider from 'debug-workbench-core-components/lib/debug-engine-provider';
 
 /** Integrates DebugConfigurationElement into Atom. */
 export default class DebugConfiguration {
@@ -14,7 +13,7 @@ export default class DebugConfiguration {
   
   static create(debugConfig: IDebugConfig): Promise<DebugConfiguration> {
     return Promise.resolve().then(() => {
-      return engineProvider.getEngine(debugConfig.engine).createConfigElement(debugConfig);
+      return debugEngineProvider.getEngine(debugConfig.engine).createConfigElement(debugConfig);
     })
     .then((element) => new DebugConfiguration(element));
   }
