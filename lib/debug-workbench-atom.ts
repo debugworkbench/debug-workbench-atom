@@ -3,7 +3,11 @@
 
 import DebugToolbar from './debug-toolbar';
 import DebugConfigDialog from './debug-configuration';
-import { NewDebugConfigDialogElement, IDebugConfig, DebugConfigManager, debugWorkbench } from 'debug-workbench-core-components';
+import {
+  NewDebugConfigDialogElement,
+  IDebugConfig, DebugConfigManager, DebugConfigFileLoader,
+  debugWorkbench
+} from 'debug-workbench-core-components';
 import { CompositeDisposable } from 'atom';
 import { importHref } from './utils';
 import * as path from 'path';
@@ -103,8 +107,9 @@ export function activate(state: any): void {
   elementFactory.addElementPath('debug-workbench-debug-toolbar', path.join('debug-toolbar', 'debug-toolbar.html'));
   elementFactory.addElementPath('debug-workbench-new-debug-config-dialog', path.join('new-debug-config-dialog', 'new-debug-config-dialog.html'));
   
-  const debugConfigsPath = path.join(atom.getConfigDirPath(), 'DebugWorkbenchDebugConfigs.json'); 
-  const debugConfigManager = new DebugConfigManager(debugConfigsPath);
+  const debugConfigsPath = path.join(atom.getConfigDirPath(), 'DebugWorkbenchDebugConfigs.json');
+  const debugConfigLoader = new DebugConfigFileLoader(debugConfigsPath); 
+  const debugConfigManager = new DebugConfigManager(debugConfigLoader);
   // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
   subscriptions = new CompositeDisposable();
     
