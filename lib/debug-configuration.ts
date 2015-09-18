@@ -24,7 +24,7 @@ export default class DebugConfiguration {
     // hook up the element to the panel so that opening/closing the element shows/hides the panel
     this.subscriptions = new CompositeDisposable(
       element.onOpened(() => this.modalPanel.show()),
-      element.onClosed(() => this.modalPanel.hide())
+      element.onClosed(() => this.destroy())
     );
     this.modalPanel = atom.workspace.addModalPanel({ item: this.element, visible: false });
   }
