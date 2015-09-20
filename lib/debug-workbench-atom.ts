@@ -103,7 +103,7 @@ export function activate(state: any): void {
   const elementFactory = new ElementFactory(packagePath);
   // manually add the initial set of custom elements to the element factory,
   // any dependencies will be added automatically
-  elementFactory.addElementPath('debug-configuration');
+  elementFactory.addElementPath('debug-workbench-gdb-mi-debug-config', path.join('gdb-mi-debug-config', 'gdb-mi-debug-config.html'));
   elementFactory.addElementPath('debug-workbench-debug-toolbar', path.join('debug-toolbar', 'debug-toolbar.html'));
   elementFactory.addElementPath('debug-workbench-new-debug-config-dialog', path.join('new-debug-config-dialog', 'new-debug-config-dialog.html'));
   
