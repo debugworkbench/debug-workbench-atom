@@ -3,9 +3,10 @@
 
 import DebugToolbar from './debug-toolbar';
 import DebugConfigDialog from './debug-configuration';
+import { IDebugConfig } from 'debug-engine';
 import {
   NewDebugConfigDialogElement,
-  IDebugConfig, DebugConfigManager, DebugConfigFileLoader,
+  DebugConfigManager, DebugConfigFileLoader,
   debugWorkbench
 } from 'debug-workbench-core-components';
 import { CompositeDisposable } from 'atom';
