@@ -2,10 +2,9 @@
 // MIT License, see LICENSE file for full terms.
 
 import { CompositeDisposable } from 'atom';
-import { IDebugConfig } from 'debug-engine';
 import {
-  IDebugConfigElement, createDebugConfigElement
-} from 'debug-workbench-core-components';
+  IDebugConfig, IDebugConfigElement, createDebugConfigElement
+} from '@debug-workbench/core-components';
 import { importHref } from './utils';
 import * as path from 'path';
 

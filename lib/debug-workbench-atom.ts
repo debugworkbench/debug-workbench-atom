@@ -3,12 +3,12 @@
 
 import DebugToolbar from './debug-toolbar';
 import DebugConfigDialog from './debug-configuration';
-import { IDebugConfig } from 'debug-engine';
 import {
+  IDebugConfig,
   NewDebugConfigDialogElement,
   DebugConfigManager, DebugConfigFileLoader,
   debugWorkbench
-} from 'debug-workbench-core-components';
+} from '@debug-workbench/core-components';
 import { CompositeDisposable } from 'atom';
 import { importHref } from './utils';
 import * as path from 'path';

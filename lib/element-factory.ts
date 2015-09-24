@@ -1,7 +1,7 @@
 // Copyright (c) 2015 Vadim Macagon
 // MIT License, see LICENSE file for full terms.
 
-import { IElementFactory, registerRegisterElement } from 'debug-workbench-core-components';
+import { IElementFactory, registerRegisterElement } from '@debug-workbench/core-components';
 import { importHref } from './utils';
 import * as path from 'path';
 
@@ -45,11 +45,11 @@ export default class ElementFactory implements IElementFactory {
   resolvePath(tagName: string, relativePath?: string): string {
     if (relativePath) {
       return path.join(
-        this.packagePath, 'node_modules', 'debug-workbench-core-components', 'lib', relativePath
+        this.packagePath, 'node_modules', '@debug-workbench/core-components', 'lib', relativePath
       );
     } else {
       return path.join(
-        this.packagePath, 'node_modules', 'debug-workbench-core-components', 'lib', tagName, tagName + '.html'
+        this.packagePath, 'node_modules', '@debug-workbench/core-components', 'lib', tagName, tagName + '.html'
       );
     }
   }

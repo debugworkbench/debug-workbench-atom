@@ -16,7 +16,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "debug-workbench-core-components": "debugworkbench/core-components"
+    "@debug-workbench/core-components": "debugworkbench/core-components"
   },
   "devDependencies": {
     "grunt-tsc": "git://github.com/enlight/grunt-tsc"
