@@ -23,6 +23,7 @@
         "./lib/debug-toolbar.ts",
         "./lib/debug-workbench-atom.ts",
         "./lib/element-factory.ts",
+        "./lib/notification-presenter.ts",
         "./lib/utils.ts"
     ]
 }

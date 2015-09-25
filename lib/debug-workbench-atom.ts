@@ -14,6 +14,7 @@ import { importHref } from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 import ElementFactory from './element-factory';
+import NotificationPresenter from './notification-presenter';
 
 var _debugToolbar: DebugToolbar;
 var subscriptions: CompositeDisposable;
@@ -111,12 +112,13 @@ export function activate(state: any): void {
   const debugConfigsPath = path.join(atom.getConfigDirPath(), 'DebugWorkbenchDebugConfigs.json');
   const debugConfigLoader = new DebugConfigFileLoader(debugConfigsPath); 
   const debugConfigManager = new DebugConfigManager(debugConfigLoader);
+  const notificationPresenter = new NotificationPresenter();
   // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
   subscriptions = new CompositeDisposable();
     
   generateTheme(packagePath);
 
-  debugWorkbench.activate({ openDebugConfig, elementFactory, debugConfigManager });
+  debugWorkbench.activate({ openDebugConfig, elementFactory, debugConfigManager, notificationPresenter });
 
   elementFactory.initialize()
   .then(() => debugConfigManager.load())
