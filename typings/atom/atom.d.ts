@@ -1332,6 +1332,7 @@ declare module AtomCore {
 	}
 
 	interface INotificationOptions {
+		stack?: string;
 		detail?: string;
 		dismissable?: boolean;
 		icon?: string;
