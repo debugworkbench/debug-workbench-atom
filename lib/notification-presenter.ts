@@ -2,23 +2,31 @@
 // MIT License, see LICENSE file for full terms.
 
 import { Disposable } from 'atom';
-import { INotificationPresenter } from '@debug-workbench/core-components';
+import {
+  INotificationPresenter, INotificationOptions, IErrorNotificationOptions
+} from '@debug-workbench/core-components';
 
 /** Displays notifications to the user. */
 export default class NotificationPresenter implements INotificationPresenter {
-  success(message: string): void {
-    atom.notifications.addSuccess(message);
+  success(message: string, options?: INotificationOptions): void {
+    options = options || {};
+    atom.notifications.addSuccess(message, { detail: options.detail });
   }
   
-  info(message: string): void {
-    atom.notifications.addInfo(message);
+  info(message: string, options?: INotificationOptions): void {
+    options = options || {};
+    atom.notifications.addInfo(message, { detail: options.detail });
   }
   
-  warning(message: string): void {
-    atom.notifications.addWarning(message);
+  warning(message: string, options?: INotificationOptions): void {
+    options = options || {};
+    atom.notifications.addWarning(message, { detail: options.detail });
   }
   
-  error(message: string): void {
-    atom.notifications.addError(message);
+  error(message: string, options?: IErrorNotificationOptions): void {
+    options = options || {};
+    atom.notifications.addError(message, {
+      stack: options.stack, detail: options.detail, dismissable: true
+    });
   }
 }
