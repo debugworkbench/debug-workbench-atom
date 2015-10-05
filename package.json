@@ -19,6 +19,7 @@
     "@debug-workbench/core-components": "debugworkbench/core-components"
   },
   "devDependencies": {
-    "grunt-tsc": "git://github.com/enlight/grunt-tsc"
+    "grunt-tsc": "git://github.com/enlight/grunt-tsc",
+    "typescript": "^1.6.2"
   }
 }
