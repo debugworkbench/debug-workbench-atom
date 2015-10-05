@@ -50,7 +50,7 @@ function generateTheme(packagePath: string): void {
 
 /**
  * Display a dialog that lets the user create a new debug configuration.
- * 
+ *
  * @return A promise that will either be resolved with a new debug configuration,
  *         or with null if the user cancelled the operation.
  */
@@ -77,12 +77,12 @@ function createDebugConfig(): Promise<IDebugConfig> {
 function getDebugConfig(configName?: string): Promise<IDebugConfig> {
   return Promise.resolve().then(() => {
     return configName ? debugWorkbench.debugConfigs.get(configName) : createDebugConfig();
-  })
+  });
 }
 
 /**
  * Open a dialog that lets the user edit a debug configuration.
- * 
+ *
  * @param configName Name of the debug configuration to edit, if this argument is omitted
  *                   the user will be prompted to create a new configuration that will
  *                   then be displayed for editing.
@@ -105,17 +105,26 @@ export function activate(state: any): void {
   const elementFactory = new ElementFactory(packagePath);
   // manually add the initial set of custom elements to the element factory,
   // any dependencies will be added automatically
-  elementFactory.addElementPath('debug-workbench-gdb-mi-debug-config', path.join('gdb-mi-debug-config', 'gdb-mi-debug-config.html'));
-  elementFactory.addElementPath('debug-workbench-debug-toolbar', path.join('debug-toolbar', 'debug-toolbar.html'));
-  elementFactory.addElementPath('debug-workbench-new-debug-config-dialog', path.join('new-debug-config-dialog', 'new-debug-config-dialog.html'));
-  
+  elementFactory.addElementPath(
+    'debug-workbench-gdb-mi-debug-config',
+    path.join('gdb-mi-debug-config', 'gdb-mi-debug-config.html')
+  );
+  elementFactory.addElementPath(
+    'debug-workbench-debug-toolbar',
+    path.join('debug-toolbar', 'debug-toolbar.html')
+  );
+  elementFactory.addElementPath(
+    'debug-workbench-new-debug-config-dialog',
+    path.join('new-debug-config-dialog', 'new-debug-config-dialog.html')
+  );
+
   const debugConfigsPath = path.join(atom.getConfigDirPath(), 'DebugWorkbenchDebugConfigs.json');
-  const debugConfigLoader = new DebugConfigFileLoader(debugConfigsPath); 
+  const debugConfigLoader = new DebugConfigFileLoader(debugConfigsPath);
   const debugConfigManager = new DebugConfigManager(debugConfigLoader);
   const notificationPresenter = new NotificationPresenter();
   // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
   subscriptions = new CompositeDisposable();
-    
+
   generateTheme(packagePath);
 
   debugWorkbench.activate({ openDebugConfig, elementFactory, debugConfigManager, notificationPresenter });
@@ -126,7 +135,7 @@ export function activate(state: any): void {
   .then(() => DebugToolbar.create())
   .then((debugToolbar) => {
     _debugToolbar = debugToolbar;
-    
+
     // Register command that toggles this view
     subscriptions.add(atom.commands.add('atom-workspace', 'debug-workbench-atom:toggle', toggle));
     // Atom doesn't wait for the package to finish activating before it attempts to execute
@@ -137,12 +146,12 @@ export function activate(state: any): void {
   })
   .catch((err) => {
     console.error(err);
-  })
+  });
 }
 
 export function deactivate(): void {
   packageReady = false;
-    
+
   if (subscriptions) {
     subscriptions.dispose();
   }

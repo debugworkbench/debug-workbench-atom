@@ -9,12 +9,12 @@ import * as path from 'path';
 /** Integrates DebugToolbarElement into Atom. */
 export default class DebugToolbar {
   private panel: AtomCore.Panel;
-  
+
   static create(): Promise<DebugToolbar> {
     return DebugToolbarElement.create()
       .then((debugToolbarElement) => new DebugToolbar(debugToolbarElement));
   }
-  
+
   constructor(private element: IDebugToolbarElement) {
     // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
     element.classList.add('native-key-bindings');
@@ -32,7 +32,7 @@ export default class DebugToolbar {
       this.element = null;
     }
   }
-  
+
   toggle(): void {
     if (this.panel) {
       if (this.panel.isVisible()) {

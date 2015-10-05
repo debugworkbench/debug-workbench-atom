@@ -12,14 +12,14 @@ import * as path from 'path';
 export default class DebugConfiguration {
   private subscriptions: CompositeDisposable;
   private modalPanel: AtomCore.Panel;
-  
+
   static create(debugConfig: IDebugConfig): Promise<DebugConfiguration> {
     return Promise.resolve().then(() => {
       return createDebugConfigElement(debugConfig);
     })
     .then((element) => new DebugConfiguration(element));
   }
-  
+
   constructor(private element: IDebugConfigElement) {
     // prevent Atom from hijacking keyboard input so that backspace etc. work as expected
     element.classList.add('native-key-bindings');
@@ -46,15 +46,15 @@ export default class DebugConfiguration {
       this.element = null;
     }
   }
-  
+
   show(): void {
     this.element.open();
   }
-  
+
   hide(): void {
     this.element.close();
   }
-  
+
   toggle(): void {
     if (this.modalPanel && this.element) {
       if (this.modalPanel.isVisible()) {

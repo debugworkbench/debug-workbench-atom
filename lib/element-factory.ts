@@ -23,15 +23,15 @@ interface IElementMapEntry {
  */
 export default class ElementFactory implements IElementFactory {
   private elements = new Map</* tagName: */string, IElementMapEntry>();
-  
+
   constructor(private packagePath: string) {
   }
-  
+
   /**
    * Initialize the factory.
-   * 
+   *
    * This must be done before any debug-workbench custom elements are imported.
-   * @return A promise that will be resolved when initialization completes. 
+   * @return A promise that will be resolved when initialization completes.
    */
   initialize(): Promise<void> {
     return importHref(path.join(this.packagePath, 'static', 'polymer-global-settings.html'))
@@ -41,7 +41,7 @@ export default class ElementFactory implements IElementFactory {
       });
     });
   }
-  
+
   resolvePath(tagName: string, relativePath?: string): string {
     if (relativePath) {
       return path.join(
@@ -53,10 +53,10 @@ export default class ElementFactory implements IElementFactory {
       );
     }
   }
-  
+
   /**
    * Set the path to an element's main `.html` file.
-   * 
+   *
    * @param tagName The name under which the custom element will be registered with the document.
    * @param relativePath The path to the element's `.html` file relative to the
    *                     `debug-workbench-core-components` package directory. If omitted this
@@ -65,7 +65,7 @@ export default class ElementFactory implements IElementFactory {
   addElementPath(tagName: string, relativePath?: string): void {
     this.elements.set(tagName, { documentPath: this.resolvePath(tagName, relativePath) });
   }
-  
+
   setElementConstructor(tagName: string, elementConstructor: Function): void {
     const elementEntry = this.elements.get(tagName);
     if (elementEntry) {
@@ -74,10 +74,10 @@ export default class ElementFactory implements IElementFactory {
       this.elements.set(tagName, { elementConstructor });
     }
   }
-  
-  /** 
+
+  /**
    * Import a custom element from a previously specified location.
-   * 
+   *
    * @param tagName The name of known custom element previously added to the factory via
    *                [[addElementPath]].
    * @return A promise that will be resolved with a custom element constructor function.
@@ -96,11 +96,11 @@ export default class ElementFactory implements IElementFactory {
       }
     });
   }
-  
+
   /**
    * Create a new instance of a custom element.
-   * 
-   * @param tagName The name of a known custom element. 
+   *
+   * @param tagName The name of a known custom element.
    * @return A promise that will be resolved with a new custom element instance.
    */
   createElement(tagName: string, ...args: any[]): Promise<HTMLElement> {
@@ -109,7 +109,7 @@ export default class ElementFactory implements IElementFactory {
       if (elementConstructor) {
         // invoke the constructor with the given args
         // TODO: in ES6 this can be simplified to Reflect.construct(elementConstructor, args),
-        //       but have to wait for Chrome and Electron to support it. 
+        //       but have to wait for Chrome and Electron to support it.
         resolve(new (Function.prototype.bind.apply(elementConstructor, [null].concat(args))));
       } else {
         resolve(
@@ -121,7 +121,7 @@ export default class ElementFactory implements IElementFactory {
       }
     });
   }
-  
+
   createCoreElement(tagName: string, ...args: any[]): Promise<HTMLElement> {
     return this.createElement('debug-workbench-' + tagName, args);
   }

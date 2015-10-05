@@ -12,17 +12,17 @@ export default class NotificationPresenter implements INotificationPresenter {
     options = options || {};
     atom.notifications.addSuccess(message, { detail: options.detail });
   }
-  
+
   info(message: string, options?: INotificationOptions): void {
     options = options || {};
     atom.notifications.addInfo(message, { detail: options.detail });
   }
-  
+
   warning(message: string, options?: INotificationOptions): void {
     options = options || {};
     atom.notifications.addWarning(message, { detail: options.detail });
   }
-  
+
   error(message: string, options?: IErrorNotificationOptions): void {
     options = options || {};
     atom.notifications.addError(message, {
