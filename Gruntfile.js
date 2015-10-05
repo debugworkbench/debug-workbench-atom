@@ -32,10 +32,36 @@ module.exports = function(grunt) {
           project: './node_modules/@debug-workbench/core-components/node_modules/gdb-mi-debug-engine/src'
         }
       }
+    },
+    'jshint': {
+      files: ['Gruntfile.js'],
+      options: {
+        // options here to override JSHint defaults
+        globals: {
+          jQuery: true,
+          console: true,
+          module: true,
+          document: true
+        }
+      }
+    },
+    'tslint': {
+      errors: {
+        options: {
+          configuration: grunt.file.readJSON('conf/tslint.json')
+        },
+        files: {
+          src: [
+            'lib/**/*.ts'
+          ]
+        }
+      }
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-tsc');
+  grunt.loadNpmTasks('grunt-tslint');
 
   grunt.registerTask('build', [
     'tsc:debug-engine',
@@ -43,5 +69,6 @@ module.exports = function(grunt) {
     'tsc:core-components',
     'tsc:atom-package'
   ]);
+  grunt.registerTask('lint', ['jshint', 'tslint']);
   grunt.registerTask('default', ['tsc:atom-package']);
 };
