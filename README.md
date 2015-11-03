@@ -1,7 +1,8 @@
-# debug-workbench-atom package
+# debug-workbench-atom package (discontinued)
 
-Debug Workbench is an extensible debugging framework, and this package integrates it into the Atom
-editor.
+Debug Workbench is an extensible debugging framework, and this package was meant to integrate it
+into the Atom editor. However, this proved to be overly tedious, so the integration has been
+dropped. Development focus has now switched to a [standalone Electron-based application](https://github.com/debugworkbench/hydragon). 
 
 Development
 ===========
